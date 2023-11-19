@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Todays Birthdays Project ( Tuesday, 14 September 2021 )</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@600&display=swap');
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        background-color: #f28ab2;
+      }
+      img {
+        max-width: 100%;
+        vertical-align: middle;
+      }
+      .container {
+        max-width: 1170px;
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: 15px;
+        padding-right: 15px;
+      }
+      #birthdays-today {
+        margin: 5rem 0;
+        width: 450px;
+        margin-left: auto;
+        padding: 25px 30px;
+        background-color: #fff;
+        margin-right: auto;
+        box-shadow: 0 5px 15px rgb(0 0 0 / 40%);
+        border-radius: 5px;
+      }
+      #birthdays-today h2 {
+        letter-spacing: 2px;
+        margin-bottom: 25px;
+      }
+      .birthday-item:not(:last-child) {
+        margin-bottom: 20px;
+      }
+      .birthday-item::after {
+        content: ' ';
+        clear: both;
+        display: block;
+      }
+      .birthday-item .birthday-image {
+        float: left;
+        width: 75px;
+      }
+      .birthday-item .birthday-image img {
+        height: 75px;
+        object-fit: cover;
+        border-radius: 50%;
+        width: 100%;
+      }
+      .birthday-item .birthday-content {
+        float: right;
+        width: calc(100% - 90px);
+      }
+      .birthday-item .birthday-content {
+        margin-top: 12px;
+      }
+      .birthday-item .birthday-content h3 {
+        font-family: 'Open Sans', sans-serif;
+        color: #555;
+        letter-spacing: 1px;
+        font-size: 18px;
+        line-height: 25px;
+      }
+      .birthday-item .birthday-content p {
+        color: #617d98;
+      }
+      .birthday-items + a {
+        color: #fff;
+        text-decoration: none;
+        background: #f28ab2;
+        display: block;
+        padding: 10px;
+        text-align: center;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        word-spacing: 2px;
+        margin-top: 30px;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <section id="birthdays-today">
+      <h2><span class="birthday-count">5</span> Birthdays Today</h2>
+      <div class="birthday-items"></div>
+      <a href="#">Clear All</a>
+    </section>
+
+    <script>
+      // Variables
+      const birthdayItemsDiv = document.querySelector('.birthday-items');
+      const birthdayCountSpan = document.querySelector('span.birthday-count');
+      const clearAllButton = birthdayItemsDiv.nextElementSibling;
+      let birthdays = [];
+
+      // Ajax Get Birthdays
+      function getBirthdays(url, callback) {
+        const xhr = new XMLHttpRequest();
+
+        xhr.open('get', url);
+        xhr.onload = function () {
+          if (this.status === 200) {
+            birthdays = JSON.parse(this.responseText);
+            callback(birthdays);
+          } else {
+            console.log('Error');
+          }
+        };
+        xhr.send();
+      }
+
+      // Document Load Event
+      document.addEventListener('DOMContentLoaded', function () {
+        // Get Birthdays
+        getBirthdays('data.json', birthdays => {
+          let html = '';
+          for (let i = 0; i < birthdays.length; i++) {
+            const { id, name, age, image } = birthdays[i];
+            html += `
+              <div class="birthday-item">
+                <div class="birthday-image">
+                  <img
+                    src="${image}"
+                    alt=""
+                  />
+                </div>
+                <div class="birthday-content">
+                  <h3>${name}</h3>
+                  <p>${age} Years</p>
+                </div>
+              </div>
+            `;
+          }
+          birthdayItemsDiv.innerHTML = html;
+          birthdayCountSpan.innerHTML = birthdays.length;
+        });
+
+        clearAllButton.addEventListener('click', function () {
+          if (confirm('Are you sure?')) {
+            birthdays = [];
+            birthdayItemsDiv.innerHTML = '';
+            birthdayCountSpan.innerHTML = birthdays.length;
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

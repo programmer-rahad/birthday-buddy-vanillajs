@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Todays Birthdays Project ( Tuesday, 14 September 2021 )</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@600&display=swap');
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        background-color: #f28ab2;
+      }
+      img {
+        max-width: 100%;
+        vertical-align: middle;
+      }
+      .container {
+        max-width: 1170px;
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: 15px;
+        padding-right: 15px;
+      }
+      #birthdays-today {
+        margin: 5rem 0;
+        width: 450px;
+        margin-left: auto;
+        padding: 25px 30px;
+        background-color: #fff;
+        margin-right: auto;
+        box-shadow: 0 5px 15px rgb(0 0 0 / 40%);
+        border-radius: 5px;
+      }
+      #birthdays-today h2 {
+        letter-spacing: 2px;
+        margin-bottom: 25px;
+      }
+      .birthday-item:not(:last-child) {
+        margin-bottom: 20px;
+      }
+      .birthday-item::after {
+        content: ' ';
+        clear: both;
+        display: block;
+      }
+      .birthday-item .birthday-image {
+        float: left;
+        width: 75px;
+        border-radius: 50%;
+        overflow: hidden;
+        perspective: 850px;
+      }
+      .birthday-item .birthday-image > div {
+        position: relative;
+        height: 75px;
+        transform-style: preserve-3d;
+        transition-duration: 1s;
+      }
+      .birthday-item .birthday-image:hover > div {
+        transform: rotateY(180deg);
+      }
+      .birthday-item .birthday-image img {
+        object-fit: cover;
+        width: 100%;
+        position: absolute;
+        height: 100%;
+        backface-visibility: hidden;
+      }
+      .birthday-item .birthday-image a {
+        position: absolute;
+        color: #fff;
+        background-color: #0573e7;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        text-align: center;
+        line-height: 75px;
+        font-size: 25px;
+        backface-visibility: hidden;
+      }
+      .birthday-item .birthday-image a {
+        transform: rotateY(180deg);
+      }
+      .birthday-item .birthday-content {
+        float: right;
+        width: calc(100% - 90px);
+      }
+      .birthday-item .birthday-content {
+        margin-top: 12px;
+      }
+      .birthday-item .birthday-content h3 {
+        font-family: 'Open Sans', sans-serif;
+        color: #555;
+        letter-spacing: 1px;
+        font-size: 18px;
+        line-height: 25px;
+      }
+      .birthday-item .birthday-content p {
+        color: #617d98;
+      }
+      .birthday-items + a {
+        color: #fff;
+        text-decoration: none;
+        background: #f28ab2;
+        display: block;
+        padding: 10px;
+        text-align: center;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        word-spacing: 2px;
+        margin-top: 30px;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <section id="birthdays-today">
+      <h2><span class="birthday-count">5</span> Birthdays Today</h2>
+      <div class="birthday-items"></div>
+      <a href="#">Clear All</a>
+    </section>
+
+    <script>
+      'use strict';
+      // Variables
+      const birthdayItemsDiv = document.querySelector('.birthday-items');
+      const birthdayCountSpan = document.querySelector('span.birthday-count');
+      const clearAllButton = birthdayItemsDiv.nextElementSibling;
+      let birthdays = [];
+
+      // show birthdays
+      function showBirthdays(url, callback) {
+        const xhr = new XMLHttpRequest();
+        xhr.responseType = 'json';
+        xhr.open('get', url);
+        xhr.onreadystatechange = () => {
+          // Request Recieved
+          if (xhr.readyState === 2) {
+            // console.log('Recieved');
+          }
+          if (xhr.readyState === 3) {
+            // console.log('Loading');
+          }
+          if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+              birthdays = xhr.response;
+              callback(birthdays);
+            } else {
+              console.log('Something error');
+            }
+          }
+        };
+        xhr.send();
+      }
+
+      // DOM Content Loaded
+      document.addEventListener('DOMContentLoaded', () => {
+        // show birthdays
+        showBirthdays('data.json', birthdays => {
+          let html = '';
+          for (let i = 0; i < birthdays.length; i++) {
+            const { id, name, age, image, facebook } = birthdays[i];
+            html += `
+              <div class="birthday-item">
+                <div class="birthday-image">
+                  <div>
+                    <img
+                      src="${image}"
+                      alt=""
+                    />
+                    <a href="${facebook}">
+                      <i class="fab fa-facebook"></i>
+                    </a>
+                  </div>
+                </div>
+                <div class="birthday-content">
+                  <h3>${name}</h3>
+                  <p>${age} Years</p>
+                </div>
+              </div>
+            `;
+          }
+          birthdayItemsDiv.innerHTML = html;
+          birthdayCountSpan.textContent = birthdays.length;
+        });
+
+        // event: clear birthdays
+        clearAllButton.addEventListener('click', function () {
+          birthdays = [];
+          birthdayItemsDiv.innerHTML = '';
+          birthdayCountSpan.textContent = birthdays.length;
+        });
+      });
+    </script>
+  </body>
+</html>
